@@ -10,7 +10,7 @@ class MatchResult
      *
      * @var bool
      */
-    private $success = false;
+    private $success;
 
     /**
      * Allowed methods.
