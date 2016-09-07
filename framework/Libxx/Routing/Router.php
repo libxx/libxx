@@ -6,7 +6,7 @@ use FastRoute\Dispatcher;
 use FastRoute\RouteParser;
 use FastRoute\DataGenerator;
 use FastRoute\RouteCollector;
-use FastRoute\RouteParser\Std;
+use FastRoute\RouteParser\Std as StdRouteParser;
 use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
 use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
 
@@ -58,12 +58,20 @@ class Router implements RouterInterface
     /**
      * Router constructor.
      *
-     * @param callable $dispatcherFactory
+     * @param RouteParser|null $routeParser
+     * @param DataGenerator|null $dataGenerator
+     * @param callable|null $dispatcherFactory
      */
-    public function __construct(callable $dispatcherFactory = null)
+    public function __construct(RouteParser $routeParser = null, DataGenerator $dataGenerator = null, callable $dispatcherFactory = null)
     {
-        $this->routeParser = new Std();
-        $this->dataGenerator = new GroupCountBasedDataGenerator();
+        if (is_null($routeParser)) {
+            $routeParser = new StdRouteParser();
+        }
+        if (is_null($dataGenerator)) {
+            $dataGenerator = new GroupCountBasedDataGenerator();
+        }
+        $this->routeParser = $routeParser;
+        $this->dataGenerator = $dataGenerator;
         $this->routeCollector = new RouteCollector($this->routeParser, $this->dataGenerator);
         $this->dispatcherFactory = $dispatcherFactory;
     }
@@ -126,6 +134,61 @@ class Router implements RouterInterface
         }
 
         return new MatchResult($success, $allowedMethods, $params, $route);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function createURL($name, array $parameters = [])
+    {
+        $this->injectRoutes();
+
+        $route = $this->getRouteByName($name);
+        if (!$route) {
+            throw new \InvalidArgumentException(sprintf('Cannot create URL for route "%s": route not found.', $name));
+        }
+
+        $routeDataList = $this->routeParser->parse($route->getPath());
+        $routeDataList = array_reverse($routeDataList);
+
+        $segments = [];
+        $missingSegmentName = null;
+        $usedParameterKeys = [];
+        foreach ($routeDataList as $routeData) {
+            foreach ($routeData as $item) {
+                if (is_string($item)) {
+                    $segments[] = $item;
+                } else {
+                    list($varName) = $item;
+                    if (!isset($parameters[$varName])) {
+                        $segments = [];
+                        $usedParameterKeys = [];
+                        $missingSegmentName = $varName;
+                        break;
+                    }
+                    $segments[] = $parameters[$varName];
+                    $usedParameterKeys[] = $varName;
+                }
+            }
+            if (!empty($segments)) {
+                break;
+            }
+        }
+
+        if (empty($segments)) {
+            throw new \InvalidArgumentException("Missing data for URL segment: \"{$missingSegmentName}\".");
+        }
+
+        $unusedParameters = array_filter($parameters, function ($key) use ($usedParameterKeys) {
+            return !in_array($key, $usedParameterKeys, true);
+        }, ARRAY_FILTER_USE_KEY);
+
+        $URL = implode($segments);
+        if ($unusedParameters) {
+            $URL .= '?' . http_build_query($unusedParameters);
+        }
+
+        return $URL;
     }
 
     /**

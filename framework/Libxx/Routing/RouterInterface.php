@@ -37,4 +37,13 @@ interface RouterInterface
      * @return MatchResult
      */
     public function match($method, $uri);
+
+    /**
+     * Create an URL by the given route name and parameters.
+     *
+     * @param string $name
+     * @param array $parameters
+     * @return string
+     */
+    public function createURL($name, array $parameters = []);
 }
