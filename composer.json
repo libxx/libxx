@@ -1,5 +1,6 @@
 {
     "require": {
+        "php": ">=5.6.0",
         "symfony/http-foundation": "^3.1",
         "symfony/event-dispatcher": "^3.1",
         "symfony/http-kernel": "^3.1",
