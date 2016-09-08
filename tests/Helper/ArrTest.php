@@ -22,7 +22,7 @@ class ArrTest extends \PHPUnit_Framework_TestCase
     public function testMap()
     {
         $a = [1, 2, 3];
-        $b = function($v, $k) {
+        $b = function ($v, $k) {
             return [$v * 2, $k];
         };
         $c = [[2, 0], [4, 1], [6, 2]];
@@ -33,7 +33,7 @@ class ArrTest extends \PHPUnit_Framework_TestCase
     public function testMapWithAdditionalParameters()
     {
         $a = [1, 2, 3];
-        $b = function($v, $k, $arg) {
+        $b = function ($v, $k, $arg) {
             return $v * $arg;
         };
         $c = 2;
