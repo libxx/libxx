@@ -2,6 +2,12 @@ language: php
 
 php:
   - 5.6
+  - 7.0
+  - 7.1
+
+matrix:
+  allow_failures:
+    - php: 7.1
 
 cache:
   directories:
@@ -11,5 +17,8 @@ cache:
 install:
   - travis_retry composer self-update && composer --version
   - travis_retry composer update --prefer-dist --no-interaction
+
+before_script:
+  - phpenv config-rm xdebug.ini || echo "xdebug is not installed"
 
 script: vendor/bin/phpunit -v
