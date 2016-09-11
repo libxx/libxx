@@ -26,7 +26,11 @@ class Middleware
     }
 
     /**
-     * @inheritDoc
+     * Handle the request and response.
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return ResponseInterface
      */
     public function handle(ServerRequestInterface $request, ResponseInterface $response)
     {

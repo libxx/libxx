@@ -19,11 +19,41 @@ return [
         \Libxx\Middleware\DispatcherInterface::class => new \Libxx\Middleware\PathBasedDispatcher(),
         \Libxx\Kernel\CallableResolverInterface::class => new \Libxx\Kernel\CallableResolver(),
         \Libxx\Routing\RouterInterface::class => new \Libxx\Routing\Router(),
-        \Libxx\Error\HandleExceptions::class
+        \Libxx\Error\HandleExceptions::class,
+        \Libxx\Routing\RouteRegister::class,
     ],
 
     'bootstraps' => [
         \Libxx\Error\HandleExceptions::class,
+        \Libxx\Routing\RouteRegister::class,
     ],
+
+    'routes' => [
+        'api' => [
+            'path' => '/api',
+            'middleware' => [
+                function($req, $resp, \Libxx\Middleware\Middleware $next) {
+                    $resp = $next->handle($req, $resp);
+                    return $resp->withAddedHeader('Content-Type', 'application/json');
+                },
+                function($req, $resp, \Libxx\Middleware\Middleware $next) {
+                    $resp = $next->handle($req, $resp);
+                    return $resp->withAddedHeader('Libxx-Process-In', strval(round((microtime(true) - APP_STARTED_AT) * 1000, 2)));
+                },
+            ],
+            'routes' => [
+                'ping' => [
+                    'path' => '/ping',
+                    'context' => function() {
+                        $resp = new \Zend\Diactoros\Response();
+                        $resp->getBody()->write(json_encode([
+                            'timestamp' => microtime(true)
+                        ]));
+                        return $resp;
+                    }
+                ],
+            ]
+        ]
+    ]
 
 ];
