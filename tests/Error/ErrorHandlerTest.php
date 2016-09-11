@@ -20,7 +20,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
         $response = $this->createMock(ResponseInterface::class);
         $exceptionHandler->method('handle')->willReturn($response);
 
-        $container['exception_handler'] = $exceptionHandler;
+        $container[ExceptionHandlerInterface::class] = $exceptionHandler;
 
         $errorHandler = new ErrorHandler();
         $errorHandler->setContainer($container);
