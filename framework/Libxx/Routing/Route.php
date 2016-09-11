@@ -34,14 +34,22 @@ class Route implements RouteInterface
     private $name;
 
     /**
+     * The route middleware.
+     *
+     * @var array
+     */
+    private $middleware;
+
+    /**
      * Route constructor.
      *
      * @param array|string $methods
      * @param string $path
      * @param mixed $context
+     * @param array $middleware
      * @param string|null $name
      */
-    public function __construct($methods, $path, $context, $name = null)
+    public function __construct($methods, $path, $context, array $middleware = [], $name = null)
     {
         if (is_string($methods)) {
             $methods = [$methods];
@@ -58,6 +66,7 @@ class Route implements RouteInterface
         $this->methods = $methods;
         $this->path = $path;
         $this->context = $context;
+        $this->middleware = $middleware;
         $this->name = $name;
     }
 
@@ -91,5 +100,13 @@ class Route implements RouteInterface
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMiddleware()
+    {
+        return $this->middleware;
     }
 }

@@ -59,7 +59,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     {
         $name = 'bar';
         $router = new Router();
-        $route1 = new Route('GET', '/foo', null, $name);
+        $route1 = new Route('GET', '/foo', null, [], $name);
         $router->add($route1);
         $this->assertSame($route1, $router->getRouteByName($name));
         $this->assertNull($router->getRouteByName('baz'));
@@ -101,14 +101,14 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     public function testCreateURL()
     {
         $router = new Router();
-        $router->add(new Route('GET', '/foo', null, 'foo'));
+        $router->add(new Route('GET', '/foo', null, [], 'foo'));
         $this->assertEquals('/foo', $router->createURL('foo'));
         $this->assertEquals('/foo?bar=baz', $router->createURL('foo', ['bar' => 'baz']));
 
-        $router->add(new Route('GET', '/bar/{id}', null, 'bar'));
+        $router->add(new Route('GET', '/bar/{id}', null, [], 'bar'));
         $this->assertEquals('/bar/123', $router->createURL('bar', ['id' => '123']));
 
-        $router->add(new Route('GET', '/baz[/{id}]', null, 'baz'));
+        $router->add(new Route('GET', '/baz[/{id}]', null, [], 'baz'));
         $this->assertEquals('/baz/123', $router->createURL('baz', ['id' => '123']));
         $this->assertEquals('/baz', $router->createURL('baz'));
     }
@@ -128,7 +128,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     public function testCreateURLForMissingSegment()
     {
         $router = new Router();
-        $router->add(new Route('GET', '/foo/{id}', null, 'foo'));
+        $router->add(new Route('GET', '/foo/{id}', null, [], 'foo'));
         $router->createURL('foo');
     }
 }

@@ -13,6 +13,13 @@ interface RouteInterface
     public function getContext();
 
     /**
+     * Get the route middleware.
+     *
+     * @return array
+     */
+    public function getMiddleware();
+
+    /**
      * Get the methods supported by this route.
      *
      * @return array

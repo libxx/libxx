@@ -57,7 +57,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($route->getName());
 
         $name = 'bar';
-        $route = new Route('GET', '/foo', null, $name);
+        $route = new Route('GET', '/foo', null, [], $name);
         $this->assertEquals($name, $route->getName());
     }
 
@@ -66,6 +66,16 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidNameType()
     {
-        new Route('GET', '/foo', null, []);
+        new Route('GET', '/foo', null, [], []);
+    }
+
+    public function testMiddleware()
+    {
+        $route = new Route('GET', '/', null);
+        $this->assertInternalType('array', $route->getMiddleware());
+        $this->assertEmpty($route->getMiddleware());
+
+        $route = new Route('GET', '/', null, ['foo']);
+        $this->assertEquals(['foo'], $route->getMiddleware());
     }
 }
