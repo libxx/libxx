@@ -18,6 +18,6 @@ class ErrorHandler implements ErrorHandlerInterface, ContainerAwareInterface
     public function handle(\Error $error, ServerRequestInterface $req, ResponseInterface $resp)
     {
         $exception = ErrorUtils::convertErrorToException($error);
-        return $this->container->get('exception_handler')->handle($exception, $req, $resp);
+        return $this->container->get(ExceptionHandlerInterface::class)->handle($exception, $req, $resp);
     }
 }

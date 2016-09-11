@@ -13,11 +13,14 @@ class ErrorUtils
      */
     public static function convertErrorToException($error)
     {
-        if ($error instanceof \Error) {
+        if ($error instanceof \Exception) {
+            return $error;
+        } elseif ($error instanceof \Error) {
             $exception = new \ErrorException($error->getMessage(), $error->getCode(), -1, $error->getFile(), $error->getLine());
             $trace = $error->getTrace();
         } else {
-            $exception = new \ErrorException($error['message'], $error['code'], $error['type'], $error['file'], $error['line']);
+            $code = isset($error['code']) ? $error['code'] : 0;
+            $exception = new \ErrorException($error['message'], $code, $error['type'], $error['file'], $error['line']);
             if (function_exists('xdebug_get_function_stack')) {
                 $trace = array_reverse(array_slice(xdebug_get_function_stack(), 1, -2));
                 $trace = array_map(function ($frame) {

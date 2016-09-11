@@ -6,6 +6,9 @@ use Interop\Container\ContainerInterface;
 use Libxx\Container\ContainerAwareInterface;
 use Libxx\Container\ContainerAwareTrait;
 use Libxx\Kernel\BootstrapInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Zend\Diactoros\Response\EmitterInterface;
 
 class HandleExceptions implements ContainerAwareInterface, BootstrapInterface
 {
@@ -100,8 +103,8 @@ class HandleExceptions implements ContainerAwareInterface, BootstrapInterface
      */
     protected function convertExceptionToResponse(\Exception $e)
     {
-        $handler = $this->container->get('exception_handler');
-        $resp = $handler->handle($e, $this->container->get('request'), $this->container->get('response'));
-        $this->container->get('response_emitter')->emit($resp);
+        $handler = $this->container->get(ExceptionHandlerInterface::class);
+        $resp = $handler->handle($e, $this->container->get(ServerRequestInterface::class), $this->container->get(ResponseInterface::class));
+        $this->container->get(EmitterInterface::class)->emit($resp);
     }
 }

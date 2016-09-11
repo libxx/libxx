@@ -13,7 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Zend\Diactoros\Response\EmitterInterface;
-use Libxx\Middleware\DispatcherInterface as MiddlewareDispatcher;
+use Libxx\Middleware\DispatcherInterface as MiddlewareDispatcherInterface;
 
 class App
 {
@@ -64,8 +64,10 @@ class App
      */
     public function run()
     {
-        $request = $this->container->get('request');
-        $response = $this->container->get('response');
+        $this->boot();
+
+        $request = $this->container->get(ServerRequestInterface::class);
+        $response = $this->container->get(ResponseInterface::class);
 
         try {
             $middleware = $this->getMiddlewareDispatcher()->getMiddleware($request);
@@ -88,7 +90,11 @@ class App
             $callable = $route->getContext();
             $parameters = $result->getMatchedParameters();
             $parameters['_route'] = $route;
-            return $callable($req, $resp);
+            foreach ($parameters as $key => $value) {
+                $req = $req->withAttribute($key, $value);
+            }
+            $pipeline = $this->pipeCallable($route->getMiddleware(), $callable);
+            return $pipeline($req, $resp);
         } else {
             if ($result->isMethodFailure()) {
                 throw new MethodNotAllowedHttpException($result->getAllowedMethods(), sprintf('Allowed HTTP method: %s', implode(', ', $result->getAllowedMethods())));
@@ -121,7 +127,7 @@ class App
      */
     private function getEventDispatcher()
     {
-        return $this->container->get('event_dispatcher');
+        return $this->container->get(EventDispatcherInterface::class);
     }
 
     /**
@@ -129,7 +135,7 @@ class App
      */
     private function getRouter()
     {
-        return $this->container->get('router');
+        return $this->container->get(RouterInterface::class);
     }
 
     /**
@@ -137,7 +143,7 @@ class App
      */
     private function getResponseEmitter()
     {
-        return $this->container->get('response_emitter');
+        return $this->container->get(EmitterInterface::class);
     }
 
     /**
@@ -145,15 +151,15 @@ class App
      */
     private function getCallableResolver()
     {
-        return $this->container->get('callable_resolver');
+        return $this->container->get(CallableResolverInterface::class);
     }
 
     /**
-     * @return MiddlewareDispatcher
+     * @return MiddlewareDispatcherInterface
      */
     private function getMiddlewareDispatcher()
     {
-        return $this->container->get('middleware_dispatcher');
+        return $this->container->get(MiddlewareDispatcherInterface::class);
     }
 
     /**
@@ -161,7 +167,7 @@ class App
      */
     private function getExceptionHandler()
     {
-        return $this->container->get('exception_handler');
+        return $this->container->get(ExceptionHandlerInterface::class);
     }
 
     /**
@@ -169,6 +175,6 @@ class App
      */
     private function getErrorHandler()
     {
-        return $this->container->get('error_handler');
+        return $this->container->get(ErrorHandlerInterface::class);
     }
 }
