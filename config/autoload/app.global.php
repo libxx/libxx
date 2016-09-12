@@ -8,6 +8,7 @@ return [
     'factories' => [
         \Psr\Http\Message\ServerRequestInterface::class => \App\Factory\RequestFactory::class,
         \Libxx\Error\ExceptionHandlerInterface::class => \App\Factory\ExceptionHandlerFactory::class,
+        \Symfony\Component\Console\Application::class => \Libxx\Console\AppFactory::class,
     ],
     'objects' => [
         \Libxx\Kernel\App::class,
