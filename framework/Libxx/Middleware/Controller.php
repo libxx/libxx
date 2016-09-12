@@ -5,7 +5,7 @@ namespace Libxx\Middleware;
 use Libxx\Container\ContainerAwareInterface;
 use Libxx\Container\ContainerAwareTrait;
 
-class Controller implements ContainerAwareInterface
+abstract class Controller implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
