@@ -3,6 +3,8 @@
 namespace Libxx\Kernel;
 
 use Interop\Container\ContainerInterface;
+use Libxx\Container\ContainerAwareInterface;
+use Libxx\Container\ContainerAwareTrait;
 use Libxx\Error\ErrorHandlerInterface;
 use Libxx\Error\ExceptionHandlerInterface;
 use Libxx\Kernel\Exception\MethodNotAllowedHttpException;
@@ -15,15 +17,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Zend\Diactoros\Response\EmitterInterface;
 use Libxx\Middleware\DispatcherInterface as MiddlewareDispatcherInterface;
 
-class App
+class App implements ContainerAwareInterface
 {
 
-    /**
-     * The application service container.
-     *
-     * @var ContainerInterface
-     */
-    protected $container;
+    use ContainerAwareTrait;
 
     /**
      * Whether the application booted.
@@ -31,16 +28,6 @@ class App
      * @var bool
      */
     protected $booted = false;
-
-    /**
-     * Application constructor.
-     *
-     * @param ContainerInterface $container
-     */
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-    }
 
     /**
      * Boot the application.

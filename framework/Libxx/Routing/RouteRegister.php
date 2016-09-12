@@ -36,7 +36,6 @@ class RouteRegister implements BootstrapInterface
     {
         $routes = [];
         foreach ($routesData as $name => $routeData) {
-
             if (!isset($routeData['path'])) {
                 throw new \InvalidArgumentException('The path for current route is not defined.');
             }
@@ -46,9 +45,7 @@ class RouteRegister implements BootstrapInterface
             $name = is_null($parentName) ? $name : ($parentName . '.' . $name);
 
             if (isset($routeData['routes'])) {
-
                 $routes = array_merge($routes, $this->collectRoutes($routeData['routes'], $name, $path, $middleware));
-
             } else {
                 if (!isset($routeData['context'])) {
                     throw new \InvalidArgumentException('The context for current route is not defined.');
