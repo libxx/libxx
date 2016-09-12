@@ -57,7 +57,7 @@ class Command extends ConsoleCommand implements ContainerAwareInterface
     {
         $type = gettype($value);
         if (is_array($value)) {
-            $value = trim(json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+            $value = trim(str_replace('\\\\', '\\', json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)));
         } elseif (is_object($value)) {
             $value = get_class($value);
         } elseif (is_bool($value)) {
