@@ -4,6 +4,7 @@ return [
 
     'debug' => false,
     'config_cache_enabled' => true,
+    'base_path' => realpath(__DIR__ . '/../../'),
 
     'factories' => [
         \Psr\Http\Message\ServerRequestInterface::class => \App\Factory\RequestFactory::class,
