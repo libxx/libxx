@@ -56,15 +56,9 @@ class App implements ContainerAwareInterface
         $request = $this->container->get(ServerRequestInterface::class);
         $response = $this->container->get(ResponseInterface::class);
 
-        try {
-            $middleware = $this->getMiddlewareDispatcher()->getMiddleware($request);
-            $kernel = $this->pipeCallable($middleware, $this);
-            $response = $kernel($request, $response);
-        } catch (\Error $e) {
-            $response = $this->getErrorHandler()->handle($e, $request, $response);
-        } catch (\Exception $e) {
-            $response = $this->getExceptionHandler()->handle($e, $request, $response);
-        }
+        $middleware = $this->getMiddlewareDispatcher()->getMiddleware($request);
+        $kernel = $this->pipeCallable($middleware, $this);
+        $response = $kernel($request, $response);
 
         $this->getResponseEmitter()->emit($response);
     }
@@ -147,21 +141,5 @@ class App implements ContainerAwareInterface
     private function getMiddlewareDispatcher()
     {
         return $this->container->get(MiddlewareDispatcherInterface::class);
-    }
-
-    /**
-     * @return ExceptionHandlerInterface
-     */
-    private function getExceptionHandler()
-    {
-        return $this->container->get(ExceptionHandlerInterface::class);
-    }
-
-    /**
-     * @return ErrorHandlerInterface
-     */
-    private function getErrorHandler()
-    {
-        return $this->container->get(ErrorHandlerInterface::class);
     }
 }

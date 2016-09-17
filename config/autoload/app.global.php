@@ -14,7 +14,6 @@ return [
     'objects' => [
         \Libxx\Kernel\App::class,
         \Psr\Http\Message\ResponseInterface::class => \Zend\Diactoros\Response::class,
-        \Libxx\Error\ErrorHandlerInterface::class => \Libxx\Error\ErrorHandler::class,
         \Zend\Diactoros\Response\EmitterInterface::class => \Zend\Diactoros\Response\SapiEmitter::class,
         \Libxx\Middleware\DispatcherInterface::class => \Libxx\Middleware\PathBasedDispatcher::class,
         \Libxx\Kernel\CallableResolverInterface::class => \Libxx\Kernel\CallableResolver::class,
